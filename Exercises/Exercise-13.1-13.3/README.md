@@ -17,12 +17,12 @@ and setting name, region and configuration I proceeded to connect with the appli
 ```
 $ flyctl proxy 5432 -a fullstack-part13-blogs
 ```
-and by running
+and by running the following command
 ```
 $ flyctl postgres connect -a fullstack-part13-blogs
 ```
 
-I get access to the postgres terminal and start managing my tables in the database with the usual psql commands, like ```postgres=# \d``` ,  or ```postgres=# \l``` , or ```postgres=# \d blogs``` to see the table's model.
+I get access to the postgres terminal and start managing my tables in the database with the usual psql commands, like ```postgres=# \d``` ,  or ```postgres=# \l``` , or ```postgres=# \d blogs``` , create or drop a table, etc.
 
 that allows me to connect with the recently deployed database 
 > This is the [url](https://github.com/PacoZG/part13-relational-db) to the public repository
@@ -60,7 +60,7 @@ const main = async () => {
 }
 ```
 
-The functionality can also be found [here](../server/utils/config.js)
+The functionality can also be found [here](../../server/utils/config.js)
 
 And this is the result in the terminal
 
