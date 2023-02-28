@@ -42,7 +42,7 @@ const main = async () => {
 }
 ```
 
-The functionality can also be found [here](./server/utils/config.js)
+The functionality can also be found [here](../server/utils/config.js)
 
 And this is the result in the terminal
 
