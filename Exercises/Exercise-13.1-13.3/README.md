@@ -45,4 +45,5 @@ const main = async () => {
 The functionality can also be found [here](./server/utils/config.js)
 
 And this is the result in the terminal
+
 ![terminal](./Screenshot%202023-02-28%20at%2013.20.09.png)
