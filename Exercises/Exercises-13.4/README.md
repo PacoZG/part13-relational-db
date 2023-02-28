@@ -1,3 +1,16 @@
+# Task 13.4.
+```ts
+Transform your application into a web application that supports the following operations
+
+GET api/blogs (list all blogs)
+POST api/blogs (add a new blog)
+DELETE api/blogs/:id (delete a blog)
+The implementation for the
+```
+
+The implementation for this exercise is as follows:
+
+```Javascript
 require('dotenv').config()
 const { v4: uuidv4 } = require('uuid')
 const blogRouter = require('express').Router()
@@ -19,12 +32,11 @@ blogRouter.post('/', async (req, res) => {
     title,
     url
   }
-  
+
   try {
     const blog = Blog.create(newBlog)
     return res.json(blog)
   } catch (error) {
-    console.log({ error })
     return res.status(400).json({ error })
   }
 })
@@ -69,3 +81,4 @@ blogRouter.delete('/:id', async (req, res) => {
 })
 
 module.exports = blogRouter
+```
