@@ -1,4 +1,5 @@
 .env.text
+.env
 node_modules
 
 course-material
