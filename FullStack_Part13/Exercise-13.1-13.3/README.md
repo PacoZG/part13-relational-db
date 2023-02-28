@@ -7,6 +7,24 @@ I have created a small application using Node, express, express-async-errors, se
 ## Task 13.1.
 Create a GitHub repository for the application and create a new Heroku application for it, as well as a Postgres database. Make sure you are able to establish a connection to the application database.
 
+Since Heroku has changed to a mainly paid service for pretty much all of the resources I decided to use fly.io instead
+
+after runnig
+```
+$ flyctl postgres create
+```
+and setting name, region and configuration I proceeded to connect with the application by running...
+```
+$ flyctl proxy 5432 -a fullstack-part13-blogs
+```
+and by running
+```
+$ flyctl postgres connect -a fullstack-part13-blogs
+```
+
+I get access to the postgres terminal and start managing my tables in the database with the usual psql commands, like ```postgres=# \d``` ,  or ```postgres=# \l``` , or ```postgres=# \d blogs``` to see the table's model.
+
+that allows me to connect with the recently deployed database 
 > This is the [url](https://github.com/PacoZG/part13-relational-db) to the public repository
 
 ## Task 13.2.
