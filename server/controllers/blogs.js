@@ -1,10 +1,12 @@
-require('dotenv').config()
 const { v4: uuidv4 } = require('uuid')
 const blogRouter = require('express').Router()
-const Blog = require('../models/blog')
+const{ Blog } = require('../models')
 
-
-// const { Sequelize, Model, DataTypes } = require('sequelize')
+const blogFinder = async (req, res, next) => {
+  const { id } = req.params
+  req.blog = await Blog.findByPk(id)
+  next()
+}
 
 blogRouter.get('/', async (req, res) => {
   const blogs = await Blog.findAll()
@@ -12,59 +14,45 @@ blogRouter.get('/', async (req, res) => {
 })
 
 blogRouter.post('/', async (req, res) => {
-  const { author, title, url } = req.body
   const newBlog = {
     id: uuidv4(),
-    author,
-    title,
-    url
+    ...req.body
   }
-  
+  const blog = await Blog.create(newBlog)
   try {
-    const blog = Blog.create(newBlog)
-    return res.json(blog)
+    res.status(201).json(blog)
   } catch (error) {
-    console.log({ error })
-    return res.status(400).json({ error })
+    res.status(400).json({ message: error.message })
   }
 })
 
-blogRouter.get('/:id', async (req, res) => {
-  const { id } = req.params
-  try {
-    const blog = await Blog.findByPk(id)
-    return res.json(blog)
-  } catch (error) {
-    return res.status(404).json({ error: 'Blog not found'})
+blogRouter.get('/:id', blogFinder, async (req, res) => {
+  if (!req.blog) {
+    return res.status(404).json({ message: 'Blog not found'})
   }
+  return res.status(200).json(req.blog)
 })
 
-blogRouter.put('/:id', async (req, res) => {
-  const { id } = req.params
-  const { author, title, url } = req.body
-  const blog = await Blog.findByPk(id)
-  if (blog) {
-    blog.author = author
-    blog.title = title
-    blog.url = url
-    await blog.save()
-    res.json(blog)
-  } else {
-    res.status(404).end()
-  }
+blogRouter.put('/:id', blogFinder, async (req, res) => {
+  if (!req.blog) {
+    return res.status(404).json({ message: 'Blog not found'}).end()
+  } 
+  const { author, title, url, likes } = req.body
+  req.blog.author = author ? author : req.blog.author  
+  req.blog.title = title ? title : req.blog.title
+  req.blog.url = url ? url : req.blog.url
+  req.blog.likes = likes ? likes : req.blog.likes
+
+  await req.blog.save()
+  return res.status(200).json(req.blog)
 })
 
-blogRouter.delete('/:id', async (req, res) => {
-  const { id } = req.params
+blogRouter.delete('/:id', blogFinder, async (req, res) => {
   try {
-    await Blog.destroy({
-      where: {
-        id: id
-      }
-    })
-    return response.status(204).json().end()
+    await req.blog.destroy()
+    res.status(200).json({ message: 'Blog deleted' }).end()
   } catch (error) {
-    return res.status(204).json({ error: 'Blog does not exist' })
+    res.json({ error: 'Blog does not exist' }).end()
   }
 })
 

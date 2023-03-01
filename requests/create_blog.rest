@@ -1,8 +1,13 @@
 POST http://localhost:3001/api/blogs
 Content-type: application/json
 
+# {
+#   "author": "Edsger W. Dijkstra",
+#   "title": "Canonical string reduction",
+#   "url": "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html"
+# }
 {
-  "author": "Edsger W. Dijkstra",
-  "title": "Canonical string reduction",
-  "url": "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html"
+  "title": "React patterns",
+  "author": "Michael Chan",
+  "url": "reactpatterns.com/"
 }
