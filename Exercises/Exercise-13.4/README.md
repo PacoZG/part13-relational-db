@@ -1,4 +1,4 @@
-# Task 13.4.
+# Task 13.4
 ```ts
 Transform your application into a web application that supports the following operations
 
@@ -11,13 +11,9 @@ The implementation for the
 The implementation for this exercise is as follows:
 
 ```Javascript
-require('dotenv').config()
 const { v4: uuidv4 } = require('uuid')
 const blogRouter = require('express').Router()
 const Blog = require('../models/blog')
-
-
-// const { Sequelize, Model, DataTypes } = require('sequelize')
 
 blogRouter.get('/', async (req, res) => {
   const blogs = await Blog.findAll()
