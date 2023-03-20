@@ -1,21 +1,32 @@
-const { v4: uuidv4 } = require('uuid')
-const blogRouter = require('express').Router()
-const{ Blog } = require('../models')
+import { Blog } from "../models/blog";
 
-const blogFinder = async (req, res, next) => {
+import { Router } from "express";
+import * as uuidv4 from 'uuidv4';
+
+const router = require('express').Router()
+
+interface BlogProps {
+  id: string;
+  author?: string;
+  url?: string;
+  title?: string;
+  likes?: number;
+}
+
+const blogFinder = async (req, _res, next) => {
   const { id } = req.params
   req.blog = await Blog.findByPk(id)
   next()
 }
 
-blogRouter.get('/', async (req, res) => {
+router.get('/', async (_req, res) => {
   const blogs = await Blog.findAll()
   res.json(blogs)
 })
 
-blogRouter.post('/', async (req, res) => {
+router.post('/', async (req, res) => {
   const newBlog = {
-    id: uuidv4(),
+    id: uuidv4.uuid(),
     ...req.body
   }
   const blog = await Blog.create(newBlog)
@@ -26,18 +37,18 @@ blogRouter.post('/', async (req, res) => {
   }
 })
 
-blogRouter.get('/:id', blogFinder, async (req, res) => {
+router.get('/:id', blogFinder, async (req, res) => {
   if (!req.blog) {
     return res.status(404).json({ message: 'Blog not found'})
   }
   return res.status(200).json(req.blog)
 })
 
-blogRouter.put('/:id', blogFinder, async (req, res) => {
+router.put('/:id', blogFinder, async (req, res) => {
   if (!req.blog) {
     return res.status(404).json({ message: 'Blog not found'}).end()
   } 
-  const { author, title, url, likes } = req.body
+  const { author, title, url, likes }: BlogProps = req.body
   req.blog.author = author ? author : req.blog.author  
   req.blog.title = title ? title : req.blog.title
   req.blog.url = url ? url : req.blog.url
@@ -47,7 +58,7 @@ blogRouter.put('/:id', blogFinder, async (req, res) => {
   return res.status(200).json(req.blog)
 })
 
-blogRouter.delete('/:id', blogFinder, async (req, res) => {
+router.delete('/:id', blogFinder, async (req, res) => {
   try {
     await req.blog.destroy()
     res.status(200).json({ message: 'Blog deleted' }).end()
@@ -56,4 +67,4 @@ blogRouter.delete('/:id', blogFinder, async (req, res) => {
   }
 })
 
-module.exports = blogRouter
+export const blogRouter: Router = router;

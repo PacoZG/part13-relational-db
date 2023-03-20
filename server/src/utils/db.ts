@@ -1,6 +1,12 @@
 const { Sequelize, QueryTypes } = require('sequelize')
 const { DATABASE_URL } = require('./config')
 
+interface Blog {
+  author: string;
+  title: string;
+  likes: number;
+}
+
 const sequelize = new Sequelize(DATABASE_URL)
 
 const connectToDatabase = async () => {
@@ -8,7 +14,7 @@ const connectToDatabase = async () => {
     await sequelize.authenticate()
     console.log('Connection has been established successfully.')
     const blogs = await sequelize.query("SELECT * FROM blogs", { type: QueryTypes.SELECT })
-    blogs.map(blog => 
+    blogs.map((blog: Blog) => 
       console.log(`${blog.author}: '${blog.title}', ${blog.likes} likes`)
       )
   } catch (error) {
@@ -16,4 +22,4 @@ const connectToDatabase = async () => {
   }
 }
 
-module.exports = { connectToDatabase, sequelize }
+export { connectToDatabase, sequelize };

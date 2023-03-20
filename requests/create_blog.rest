@@ -6,8 +6,13 @@ Content-type: application/json
 #   "title": "Canonical string reduction",
 #   "url": "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html"
 # }
+# {
+#   "title": "React patterns",
+#   "author": "Michael Chan",
+#   "url": "reactpatterns.com"
+# }
 {
-  "title": "React patterns",
-  "author": "Michael Chan",
-  "url": "reactpatterns.com/"
+  "title": "Codifying your future",
+  "author": "Francisco Zavala",
+  "url": "pacoderzavala.com"
 }

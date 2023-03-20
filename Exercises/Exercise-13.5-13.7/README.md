@@ -6,18 +6,18 @@ Change the structure of your application to match the example above, or to follo
 The application's structure is as follows and can be found [here](../../server)
 
 ```
-index.js
-app.js
-util
-  config.js
-  db.js
-  logger.js
-  middleware.js
-models
-  blog.js
-  index.js
 controllers
-  blogs.js
+  blogs.ts
+models
+  blog.ts
+  index.ts
+util
+  config.ts
+  db.ts
+  logger.ts
+  middleware.ts
+app.ts
+index.ts
 ```
 __________
 
@@ -36,12 +36,20 @@ The updated number of likes will be relayed with the request:
 
 ## The implementation for this exercise is as follows:
 
-```JS
+```TS
+interface BlogProps {
+  id: string;
+  author?: string;
+  url?: string;
+  title?: string;
+  likes?: number;
+}
+
 blogRouter.put('/:id', blogFinder, async (req, res) => {
   if (!req.blog) {
     return res.status(404).json({ message: 'Blog not found'}).end()
   } 
-  const { author, title, url, likes } = req.body
+  const { author, title, url, likes }: BlogProps = req.body
   req.blog.author = author ? author : req.blog.author  
   req.blog.title = title ? title : req.blog.title
   req.blog.url = url ? url : req.blog.url
