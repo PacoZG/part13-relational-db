@@ -74,22 +74,24 @@ For this task I used the same middleware configuration on which I check if the p
 
 The implementation is as follows:
 
-```JS
-const logger = require('./logger')
+```TS
+import { NextFunction, Request, Response } from "express"
+import { logError, logInfo } from "./logger"
 
-const requestLogger = (req, res, next) => {
-  logger.info('Method:', req.method)
-  logger.info('Path:  ', req.path)
-  logger.info('Body:  ', req.body)
-  logger.info('----------------------------------------------------------')
+
+const requestLogger = (req: Request, _res: Response, next: NextFunction) => {
+  logInfo('Method:', req.method)
+  logInfo('Path:  ', req.path)
+  logInfo('Body:  ', req.body)
+  logInfo('----------------------------------------------------------')
   next()
 }
 
-const unknownEndpoint = (req, res) => {
+const unknownEndpoint = (_req: Request, res: Response) => {
   res.status(404).send({ error: 'Unknown Endpoint' })
 }
 
-const errorHandler = (error, req, res, next) => {
+const errorHandler = (error: any, _req: Request, res: Response, next: NextFunction) => {
   if (error.name === 'SequelizeDatabaseError') {
     return res.status(400).send({
       error: 'Invalid id'
@@ -100,23 +102,25 @@ const errorHandler = (error, req, res, next) => {
     })
   } 
   
-  logger.error(error.message)
+  logError(error.message)
   next(error)
 }
 
-module.exports = { requestLogger, unknownEndpoint, errorHandler }
+export { requestLogger, unknownEndpoint, errorHandler }
+
 ```
 I am also using the logger configuration:
-```JS
-const info = (...params) => {
-  console.log(...params)
-}
+```TS
+const logInfo = (...params: any) => {
+  console.log(...params);
+};
 
-const error = (...params) => {
-  console.error(...params)
-}
+const logError = (...params: any) => {
+  console.error(...params);
+};
 
-module.exports = { info, error }
+export { logInfo, logError };
+
 ```
 
 The full application can be found [here](../../server/)
