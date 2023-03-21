@@ -1,8 +1,9 @@
+import bcrypt from 'bcrypt';
 import { Router } from "express";
+import { User } from "../models";
 const jwt = require('jsonwebtoken')
 
 import { SECRET } from '../utils/config';
-const User = require('../models/user')
 
 interface UserAttributes {
   username: string;
@@ -21,7 +22,9 @@ router.post('/', async (req, res) => {
     }
   })
 
-  const passwordCorrect = password === 'secret'
+  const passwordCorrect = user === null
+    ? false
+    : await bcrypt.compare(password, user?.dataValues.password_hash)
 
   if (!(user && passwordCorrect)) {
     return res.status(401).json({
@@ -30,13 +33,13 @@ router.post('/', async (req, res) => {
   }
 
   const userForToken = {
-    username: user.username,
-    id: user.id,
+    username: user?.dataValues.username,
+    id: user?.dataValues.id,
   }
 
   const token = jwt.sign(userForToken, SECRET)
 
-  res.status(200).send({ token, username: user.username, name: user.name })
+  res.status(200).send({ token, username: user?.dataValues.username, name: user?.dataValues.name })
 })
 
 

@@ -2,6 +2,19 @@ POST http://localhost:3001/api/users
 Content-type: application/json
 
 {
-  "username": "Pacoder",
-  "name": "Paco Zavala"
-}
+  "username": "mami@chula.com",
+  "name": "Jane Pokkinen",
+  "password": "mamichula"
+  }
+  
+# {
+#   "username": "chamaco@guapo.com",
+#   "name": "Samuel Pokkinen",
+#   "password": "elchamaco"
+# }
+
+# {
+#   "username": "pacoder@example.com",
+#   "name": "Paco Zavala",
+#   "password": "papichulo"
+# }

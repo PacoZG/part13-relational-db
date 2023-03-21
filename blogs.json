@@ -1,0 +1,44 @@
+[
+  {
+  "author": "Dan Abrahov",
+  "url": "https://golden.com/wiki/Dan_Abramov_(software_engineer)-99B8RJM",
+  "title": "On let vs const",
+  "likes": 0,
+  "userId": null
+  },
+  {
+  "author": "Laurenz Albe",
+  "url": "https://github.com/laurenz",
+  "title": "Gaps in sequences in PostgreSQL",
+  "likes": 0,
+  "userId": null
+  },
+  {
+  "author": "Michael Chan",
+  "url": "https://reactpatterns.com/",
+  "title": "React patterns",
+  "likes": 0,
+  "userId": null
+  },
+  {
+  "author": "Edsger W. Dijkstra",
+  "url": "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
+  "title": "Canonical string reductions",
+  "likes": 3,
+  "userId": null
+  },
+  {
+  "author": "Francisco Zavala",
+  "url": "pacoderzavala.com",
+  "title": "Codifying your future",
+  "likes": 0,
+  "userId": null
+  },
+  {
+  "author": "Edsger W. Dijkstra",
+  "url": "reactpatterns.com/",
+  "title": "React patterns",
+  "likes": 2,
+  "userId": null
+  }
+]

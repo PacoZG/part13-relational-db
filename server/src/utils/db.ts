@@ -7,7 +7,7 @@ interface Blog {
   likes: number;
 }
 
-const sequelize = new Sequelize(DATABASE_URL)
+const sequelize = new Sequelize(DATABASE_URL);
 
 const connectToDatabase = async () => {
   try {
@@ -19,6 +19,7 @@ const connectToDatabase = async () => {
       )
   } catch (error) {
     console.error('Unable to connect to the database:', error)
+    return process.exit(1)
   }
 }
 

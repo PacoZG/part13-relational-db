@@ -1,18 +1,9 @@
 POST http://localhost:3001/api/blogs
 Content-type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNoYW1hY29AZ3VhcG8uY29tIiwiaWQiOiI0YWMzODg2My1mOTM3LTQ2OGEtOWQxMC05YzdkNWYzZThlZDMiLCJpYXQiOjE2NzkzODM2OTF9.1wxfkZ9PfNsOKyTMW9Bz95thSLB8nOaPdwcAdNE_WyQ
 
-# {
-#   "author": "Edsger W. Dijkstra",
-#   "title": "Canonical string reduction",
-#   "url": "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html"
-# }
-# {
-#   "title": "React patterns",
-#   "author": "Michael Chan",
-#   "url": "reactpatterns.com"
-# }
 {
-  "title": "Codifying your future",
-  "author": "Francisco Zavala",
-  "url": "pacoderzavala.com"
+  "author": "Samuel P Guapo",
+  "url": "https://www.puradiversion.com",
+  "title": "Be the mas guapo del mundo"
 }
