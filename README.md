@@ -18,7 +18,7 @@ server
     blog.ts
     index.ts
     user.ts
-  util
+  utils
     config.ts
     db.ts
     logger.ts

@@ -11,7 +11,7 @@ controllers
 models
   blog.ts
   index.ts
-util
+utils
   config.ts
   db.ts
   logger.ts
