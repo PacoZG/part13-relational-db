@@ -1,4 +1,4 @@
-PUT http://localhost:3001/api/blogs/5d99541c-7baf-4acc-9f94-1bef3731e21c
+PUT http://localhost:3001/api/blogs/1a811556-8f85-4d81-b3f0-19eb88bc79cd
 Content-type: application/json
 
 # {
@@ -10,5 +10,5 @@ Content-type: application/json
 
   # "title": "Canonical string reductions",
 {
-  "likes": 2
+  "likes": 1
 }
