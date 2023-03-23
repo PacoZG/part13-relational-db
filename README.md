@@ -14,6 +14,7 @@ server
     blogs.ts
     login.ts
     users.ts
+    authors.ts
   models
     blog.ts
     index.ts
