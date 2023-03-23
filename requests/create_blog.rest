@@ -4,6 +4,6 @@ Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImNoY
 
 {
   "author": "Samuel P Guapo",
-  "url": "https://www.puradiversion.com",
-  "title": "Be the mas guapo del mundo"
+  "url": "https://robloxaregreat.com",
+  "title": "Play and play until your eyes bleed"
 }

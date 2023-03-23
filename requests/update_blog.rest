@@ -1,4 +1,4 @@
-PUT http://localhost:3001/api/blogs/c81d1837-3f18-4ffc-ad38-e275f484994e
+PUT http://localhost:3001/api/blogs/5d99541c-7baf-4acc-9f94-1bef3731e21c
 Content-type: application/json
 
 # {
@@ -10,6 +10,5 @@ Content-type: application/json
 
   # "title": "Canonical string reductions",
 {
-  "author": "Edsger W. Dijkstra",
   "likes": 2
 }

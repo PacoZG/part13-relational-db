@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { Op } from 'sequelize';
 import * as uuidv4 from 'uuidv4';
 const jwt = require('jsonwebtoken');
 
@@ -21,13 +22,33 @@ const blogFinder = async (req, _res, next) => {
   next();
 };
 
-router.get('/', async (_req, res) => {
+router.get('/', async (req, res) => {
+  const { search, created_at } = req.query;
+  const getOrderCriteria = () => {
+    return created_at ? 'createdAt' : 'likes';
+  };
+
   const blogs = await Blog.findAll({
     attributes: { exclude: ['userId'] },
     include: {
       model: User,
       attributes: ['name'],
     },
+    where: {
+      [Op.or]: [
+        {
+          title: {
+            [Op.substring]: search ? search : '',
+          },
+        },
+        {
+          author: {
+            [Op.substring]: search ? search : '',
+          },
+        },
+      ],
+    },
+    order: [[getOrderCriteria(), 'DESC']],
   });
   res.json(blogs);
 });
