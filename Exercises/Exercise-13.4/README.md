@@ -5,7 +5,6 @@ Transform your application into a web application that supports the following op
 GET api/blogs (list all blogs)
 POST api/blogs (add a new blog)
 DELETE api/blogs/:id (delete a blog)
-The implementation for the
 ```
 
 The implementation for this exercise is as follows:
