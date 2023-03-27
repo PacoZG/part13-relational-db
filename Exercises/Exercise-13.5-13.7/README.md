@@ -38,7 +38,6 @@ The updated number of likes will be relayed with the request:
 
 ```TS
 interface BlogProps {
-  id: string;
   author?: string;
   url?: string;
   title?: string;
