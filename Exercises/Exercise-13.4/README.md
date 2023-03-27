@@ -23,7 +23,6 @@ blogRouter.get('/', async (req, res) => {
 blogRouter.post('/', async (req, res) => {
   const { author, title, url } = req.body
   const newBlog = {
-    id: uuidv4(),
     author,
     title,
     url

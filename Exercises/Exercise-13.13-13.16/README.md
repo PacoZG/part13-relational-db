@@ -19,10 +19,22 @@ Modify the blogs route so that it returns blogs based on likes in descending ord
 The solution for all three of previous tasks is as follows:
 
 ```TS
+type Criteria = 'createAt' | 'likes';
+type OrderCriteria = 'DESC' | 'ASC';
+
 router.get('/', async (req, res) => {
   const { search, created_at } = req.query;
-  const getOrderCriteria = () => {
-    return created_at ? 'createdAt' : 'likes';
+  let order: OrderCriteria = 'DESC';
+  let orderCriteria: Criteria;
+
+  const getOrderCriteria = (): Criteria => {
+    if (created_at) {
+      order = created_at;
+      orderCriteria = 'createAt';
+      return orderCriteria;
+    }
+    orderCriteria = 'likes';
+    return orderCriteria;
   };
 
   const blogs = await Blog.findAll({
@@ -35,17 +47,17 @@ router.get('/', async (req, res) => {
       [Op.or]: [
         {
           title: {
-            [Op.substring]: search ? search : '',  
+            [Op.substring]: search ? search : '',
           },
         },
         {
           author: {
-            [Op.substring]: search ? search : '',            
+            [Op.substring]: search ? search : '',
           },
         },
       ],
     },
-    order: [[getOrderCriteria(), 'DESC']],
+    order: [[getOrderCriteria(), order]],
   });
   res.json(blogs);
 });
@@ -67,12 +79,12 @@ import { Blog } from '../models';
 
 const router = require('express').Router();
 
-router.get('/', async (req, res) => {
+router.get('/', async (_req, res) => {
   const authors = await Blog.findAll({
     group: 'author',
     attributes: [
       'author',
-      [fn('COUNT', col('likes')), 'likes'],
+      [fn('SUM', col('likes')), 'likes'],
       [fn('COUNT', col('author')), 'articles'],
     ],
     order: [[col('likes'), 'DESC']],

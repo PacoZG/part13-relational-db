@@ -1,31 +1,35 @@
-import { DataTypes, Model } from 'sequelize';
+import * as Sequelize from 'sequelize';
 import { sequelize } from '../utils/db';
 
-class User extends Model {}
+class User extends Sequelize.Model {}
 
 User.init(
   {
     id: {
-      type: DataTypes.UUID,
+      type: Sequelize.DataTypes.UUIDV4,
+      defaultValue: Sequelize.UUIDV4,
       primaryKey: true,
     },
     username: {
-      type: DataTypes.STRING,
+      type: Sequelize.DataTypes.STRING,
       unique: true,
       allowNull: false,
       validate: {
         isEmail: {
-          msg: 'Validation isEmail on username failed',
+          msg: 'Username format is not correct',
         },
         is: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
       },
     },
     name: {
-      type: DataTypes.STRING,
+      type: Sequelize.DataTypes.STRING,
       allowNull: false,
+      validate: {
+        len: [4, 16],
+      },
     },
     password_hash: {
-      type: DataTypes.STRING,
+      type: Sequelize.DataTypes.STRING,
       allowNull: true,
     },
   },

@@ -1,20 +1,21 @@
-import { DataTypes, Model } from 'sequelize';
+import * as Sequelize from 'sequelize';
 import { sequelize } from '../utils/db';
 
-class Blog extends Model {}
+class Blog extends Sequelize.Model {}
 
 Blog.init(
   {
     id: {
-      type: DataTypes.UUID,
+      type: Sequelize.DataTypes.UUID,
+      defaultValue: Sequelize.UUIDV4,
       primaryKey: true,
     },
     author: {
-      type: DataTypes.STRING,
+      type: Sequelize.DataTypes.STRING,
       allowNull: true,
     },
     url: {
-      type: DataTypes.STRING,
+      type: Sequelize.DataTypes.STRING,
       allowNull: false,
       validate: {
         isUrl: {
@@ -24,11 +25,14 @@ Blog.init(
       },
     },
     title: {
-      type: DataTypes.STRING,
+      type: Sequelize.DataTypes.STRING,
       allowNull: false,
+      validate: {
+        len: [10, 100],
+      },
     },
     likes: {
-      type: DataTypes.INTEGER,
+      type: Sequelize.DataTypes.INTEGER,
       defaultValue: 0,
     },
   },

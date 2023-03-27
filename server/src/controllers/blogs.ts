@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import { Op } from 'sequelize';
-import * as uuidv4 from 'uuidv4';
 const jwt = require('jsonwebtoken');
 
 import { Blog, User } from '../models';
@@ -9,7 +8,6 @@ import { SECRET } from '../utils/config';
 const router = require('express').Router();
 
 interface BlogProps {
-  id: number;
   author?: string;
   url?: string;
   title?: string;
@@ -22,10 +20,22 @@ const blogFinder = async (req, _res, next) => {
   next();
 };
 
+type Criteria = 'createAt' | 'likes';
+type OrderCriteria = 'DESC' | 'ASC';
+
 router.get('/', async (req, res) => {
   const { search, created_at } = req.query;
-  const getOrderCriteria = () => {
-    return created_at ? 'createdAt' : 'likes';
+  let order: OrderCriteria = 'DESC';
+  let orderCriteria: Criteria;
+
+  const getOrderCriteria = (): Criteria => {
+    if (created_at) {
+      order = created_at;
+      orderCriteria = 'createAt';
+      return orderCriteria;
+    }
+    orderCriteria = 'likes';
+    return orderCriteria;
   };
 
   const blogs = await Blog.findAll({
@@ -48,7 +58,7 @@ router.get('/', async (req, res) => {
         },
       ],
     },
-    order: [[getOrderCriteria(), 'DESC']],
+    order: [[getOrderCriteria(), order]],
   });
   res.json(blogs);
 });
@@ -70,7 +80,6 @@ const tokenExtractor = (req, res, next) => {
 router.post('/', tokenExtractor, async (req, res) => {
   const { author, title, url } = req.body;
   const newBlog = {
-    id: uuidv4.uuid(),
     author,
     title,
     url,

@@ -16,26 +16,22 @@ const unknownEndpoint = (_req: Request, res: Response) => {
 const errorHandler = (error: any, _req: Request, res: Response, next: NextFunction) => {
   if (error.name === 'SequelizeDatabaseError') {
     return res.status(400).send({
-      error: 'Invalid ID',
+      error: error.errors[0].message,
     });
   }
 
-  if (error.errors[0].validatorName === 'isEmail') {
+  if (error.name === 'SequelizeUniqueConstraintError') {
     return res.status(400).send({
       error: error.errors[0].message,
     });
   }
 
-  if (error.errors[0].validatorName === 'isUrl') {
+  if (error) {
     return res.status(400).send({
       error: error.errors[0].message,
     });
   }
-  if (error.name === 'SequelizeValidationError') {
-    return res.status(400).json({
-      error: error.message,
-    });
-  }
+
   next(error);
 };
 

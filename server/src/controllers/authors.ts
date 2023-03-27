@@ -4,12 +4,12 @@ import { Blog } from '../models';
 
 const router = require('express').Router();
 
-router.get('/', async (req, res) => {
+router.get('/', async (_req, res) => {
   const authors = await Blog.findAll({
     group: 'author',
     attributes: [
       'author',
-      [fn('COUNT', col('likes')), 'likes'],
+      [fn('SUM', col('likes')), 'likes'],
       [fn('COUNT', col('author')), 'articles'],
     ],
     order: [[col('likes'), 'DESC']],

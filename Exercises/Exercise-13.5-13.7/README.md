@@ -75,41 +75,48 @@ For this task I used the same middleware configuration on which I check if the p
 The implementation is as follows:
 
 ```TS
-import { NextFunction, Request, Response } from "express"
-import { logError, logInfo } from "./logger"
-
+import { NextFunction, Request, Response } from 'express';
+import { logInfo } from './logger';
 
 const requestLogger = (req: Request, _res: Response, next: NextFunction) => {
-  logInfo('Method:', req.method)
-  logInfo('Path:  ', req.path)
-  logInfo('Body:  ', req.body)
-  logInfo('----------------------------------------------------------')
-  next()
-}
+  logInfo('Method:', req.method);
+  logInfo('Path:  ', req.path);
+  logInfo('Body:  ', req.body);
+  logInfo('----------------------------------------------------------');
+  next();
+};
 
 const unknownEndpoint = (_req: Request, res: Response) => {
-  res.status(404).send({ error: 'Unknown Endpoint' })
-}
+  res.status(404).send({ error: 'Unknown Endpoint' });
+};
 
 const errorHandler = (error: any, _req: Request, res: Response, next: NextFunction) => {
   if (error.name === 'SequelizeDatabaseError') {
     return res.status(400).send({
-      error: 'Invalid id'
-    })
-  } else if (error.name === 'SequelizeValidationError') {
-    return res.status(400).json({
-      error: error.message
-    })
-  } 
-  
-  logError(error.message)
-  next(error)
-}
+      error: error.errors[0].message,
+    });
+  }
 
-export { requestLogger, unknownEndpoint, errorHandler }
+  if (error.name === 'SequelizeUniqueConstraintError') {
+    return res.status(400).send({
+      error: error.errors[0].message,
+    });
+  }
 
+  if (error) {
+    return res.status(400).send({
+      error: error.errors[0].message,
+    });
+  }
+
+  next(error);
+};
+
+export { requestLogger, unknownEndpoint, errorHandler };
 ```
+
 I am also using the logger configuration:
+
 ```TS
 const logInfo = (...params: any) => {
   console.log(...params);

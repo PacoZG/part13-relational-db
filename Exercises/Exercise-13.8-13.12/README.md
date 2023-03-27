@@ -21,34 +21,38 @@ Make sure that the timestamps created_at and updated_at automatically set by Seq
 Next portion of code can be found [here](../../server/src/models/user.ts) for sequelize user's configuration
 
 ```TS
-import { DataTypes, Model } from 'sequelize';
+import * as Sequelize from 'sequelize';
 import { sequelize } from '../utils/db';
 
-class User extends Model {}
+class User extends Sequelize.Model {}
 
 User.init(
   {
     id: {
-      type: DataTypes.UUID,
+      type: Sequelize.DataTypes.UUIDV4,
+      defaultValue: Sequelize.UUIDV4,
       primaryKey: true,
     },
     username: {
-      type: DataTypes.STRING,
+      type: Sequelize.DataTypes.STRING,
       unique: true,
       allowNull: false,
       validate: {
         isEmail: {
-          msg: 'Validation isEmail on username failed',
+          msg: 'Username format is not correct',
         },
         is: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
       },
     },
     name: {
-      type: DataTypes.STRING,
+      type: Sequelize.DataTypes.STRING,
       allowNull: false,
+      validate: {
+        len: [4, 16],
+      },
     },
     password_hash: {
-      type: DataTypes.STRING,
+      type: Sequelize.DataTypes.STRING,
       allowNull: true,
     },
   },
@@ -61,18 +65,18 @@ User.init(
 );
 
 export { User };
+
 ```
 Next is the endpoint configuration for all user calls and the file can be found [here](../../server/src/controllers/users.ts)
 
 ```TS
-import bcrypt from 'bcrypt'
-import { Router } from "express"
-import * as uuidv4 from 'uuidv4'
-import { Blog, User } from "../models"
-import { SECRET } from '../utils/config'
+import bcrypt from 'bcrypt';
+import { Router } from 'express';
+import { Blog, User } from '../models';
+import { SECRET } from '../utils/config';
 
-const jwt = require('jsonwebtoken')
-const router: Router = Router()
+const jwt = require('jsonwebtoken');
+const router: Router = Router();
 
 router.get('/', async (_req, res) => {
   const users = await User.findAll({
@@ -80,54 +84,60 @@ router.get('/', async (_req, res) => {
       model: Blog,
       attributes: { exclude: ['userId'] },
     },
-    attributes: { exclude: [ 'password_hash']}
-  })
-  res.json(users)
-})
+    attributes: { exclude: ['password_hash'] },
+  });
+  res.json(users);
+});
 
 router.post('/', async (req, res) => {
-  const { name, username, password } = req.body
-  const saltRounds = 10
-  const passwordHash = await bcrypt.hash(password, saltRounds)
+  const { name, username, password } = req.body;
+
+  if (!password) {
+    return res.status(403).json({ message: 'Password needs to be provided' });
+  }
+
+  const saltRounds = 10;
+  const passwordHash = await bcrypt.hash(password, saltRounds);
   const newUser = {
-    id: uuidv4.uuid(),
     name,
     username,
-    password_hash: passwordHash
-  }
+    password_hash: passwordHash,
+  };
+
+  const user = await User.create(newUser);
 
   const userForToken = {
-    username,
-    id: newUser.id,
-  }
+    id: user.dataValues.id,
+    username: user.dataValues.username,
+  };
 
-  const token = jwt.sign(userForToken, SECRET)
-  const user = await User.create(newUser)
-  res.status(201).json({...user, token })
-})
+  const token = jwt.sign(userForToken, SECRET);
+  res.status(201).json({ username: user.dataValues.username, token });
+});
 
 router.get('/:username', async (req, res) => {
-  const { username } = req.params
+  const { username } = req.params;
   const user = await User.findOne({
     where: {
-      username: username
-    }
-  })
-  
+      username: username,
+    },
+  });
+
   if (!user) {
-    return res.status(404).json({ message: 'User not found'})
+    return res.status(404).json({ message: 'User not found' });
   }
-  return res.status(200).json(user)
-})
+  return res.status(200).json(user);
+});
 
 router.delete('/:id', async (req, res) => {
-  const { id } = req.params
-  const user = await User.findByPk(id)
-  await user?.destroy()
-  res.status(200).json({ message: 'User deleted' }).end()
-})
+  const { id } = req.params;
+  const user = await User.findByPk(id);
+  await user?.destroy();
+  res.status(200).json({ message: 'User deleted' }).end();
+});
 
 export const userRouter: Router = router;
+
 ```
 
 ### Exercise 13.9.
