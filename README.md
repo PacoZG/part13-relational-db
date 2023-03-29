@@ -9,25 +9,29 @@ Exercises
 requests
   create_blog.rest
   ...
-server
-  controllers
-    blogs.js
-    login.js
-    users.js
-    authors.js
-  models
-    blog.js
+src
+  server
+    controllers
+      blogs.js
+      login.js
+      users.js
+      authors.js
+    models
+      blog.js
+      index.js
+      user.js
+    utils
+      config.js
+      db.js
+      logger.js
+      middleware.js
+      rollbackMigrations.js
+      rollbackMutations.js
+    app.js
     index.js
-    user.js
-  utils
-    config.js
-    db.js
-    logger.js
-    middleware.js
-    rollbackMigrations.js
-    rollbackMutations.js
-  app.js
-  index.js
+  package-lock.json
+  package.json
+.gitignore
 README.md
 ...
 ```
