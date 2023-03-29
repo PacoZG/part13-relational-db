@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "dev:server": "nodemon --watch './**/*.ts' --exec 'ts-node' src/index.ts",
+    "migration:down": "node src/utils/rollbackMigrations.js",
+    "mutation:down": "node src/utils/rollbackMutations.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Paco Zavala",

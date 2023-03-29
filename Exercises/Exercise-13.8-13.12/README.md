@@ -20,11 +20,12 @@ Make sure that the timestamps created_at and updated_at automatically set by Seq
 
 Next portion of code can be found [here](../../server/src/models/user.ts) for sequelize user's configuration
 
-```TS
-import * as Sequelize from 'sequelize';
-import { sequelize } from '../utils/db';
+```JS
+const Sequelize = require('sequelize');
+const { sequelize } = require('../utils/db');
 
 class User extends Sequelize.Model {}
+
 
 User.init(
   {
@@ -64,21 +65,22 @@ User.init(
   },
 );
 
-export { User };
-
+module.exports = User;
 ```
+
 Next is the endpoint configuration for all user calls and the file can be found [here](../../server/src/controllers/users.ts)
 
-```TS
-import bcrypt from 'bcrypt';
-import { Router } from 'express';
-import { Blog, User } from '../models';
-import { SECRET } from '../utils/config';
+```JS
+const bcrypt = require('bcrypt');
+const Router = require('express').Router;
+const { Blog, User } = require('../models');
+const { SECRET } = require('../utils/config');
 
 const jwt = require('jsonwebtoken');
-const router: Router = Router();
 
-router.get('/', async (_req, res) => {
+const userRouter = Router();
+
+userRouter.get('/', async (_req, res) => {
   const users = await User.findAll({
     include: {
       model: Blog,
@@ -89,7 +91,7 @@ router.get('/', async (_req, res) => {
   res.json(users);
 });
 
-router.post('/', async (req, res) => {
+userRouter.post('/', async (req, res) => {
   const { name, username, password } = req.body;
 
   if (!password) {
@@ -115,7 +117,7 @@ router.post('/', async (req, res) => {
   res.status(201).json({ username: user.dataValues.username, token });
 });
 
-router.get('/:username', async (req, res) => {
+userRouter.get('/:username', async (req, res) => {
   const { username } = req.params;
   const user = await User.findOne({
     where: {
@@ -129,15 +131,14 @@ router.get('/:username', async (req, res) => {
   return res.status(200).json(user);
 });
 
-router.delete('/:id', async (req, res) => {
+userRouter.delete('/:id', async (req, res) => {
   const { id } = req.params;
   const user = await User.findByPk(id);
   await user?.destroy();
   res.status(200).json({ message: 'User deleted' }).end();
 });
 
-export const userRouter: Router = router;
-
+module.exports = userRouter;
 ```
 
 ### Exercise 13.9.
@@ -159,8 +160,8 @@ Modify the error handling middleware to provide a more descriptive error message
 
 The validation for the creation of a user with email as username can be found above in the result exercise 13.8 or [here](../../server/src/models/user.ts) and the implementation of the middleware can be found [here](../../server/src/utils/middleware.ts) and it has been done as shown below:
 
-```TS
-const errorHandler = (error: any, _req: Request, res: Response, next: NextFunction) => {
+```JS
+const errorHandler = (error, _req, res, next) => {
   if (error.name === 'SequelizeDatabaseError') {
     return res.status(400).send({
       error: error.errors[0].message,
@@ -190,53 +191,45 @@ Expand the application so that the current logged-in user identified by a token 
 
 The implementation can be found [here](../../server/src/controllers/login.ts) and it has been implemented as shown below:
 
-```TS
-import bcrypt from 'bcrypt';
-import { Router } from "express";
-import { User } from "../models";
-const jwt = require('jsonwebtoken')
+```JS
+const bcrypt = require('bcrypt');
+const Router = require('express').Router;
+const { User } = require('../models');
+const jwt = require('jsonwebtoken');
+const { SECRET } = require('../utils/config');
 
-import { SECRET } from '../utils/config';
+const loginRouter = Router();
 
-interface UserAttributes {
-  username: string;
-  password: string;
-  id: string;
-}
-
-const router: Router = Router()
-
-router.post('/', async (req, res) => {
-  const { username, password }: UserAttributes = req.body
+loginRouter.post('/', async (req, res) => {
+  const { username, password } = req.body;
 
   const user = await User.findOne({
     where: {
-      username: username
-    }
-  })
+      username: username,
+    },
+  });
 
-  const passwordCorrect = user === null
-    ? false
-    : await bcrypt.compare(password, user?.dataValues.password_hash)
+  const passwordCorrect =
+    user === null ? false : await bcrypt.compare(password, user?.dataValues.password_hash);
 
   if (!(user && passwordCorrect)) {
     return res.status(401).json({
-      error: 'Invalid username or password'
-    })
+      error: 'Invalid username or password',
+    });
   }
 
   const userForToken = {
     username: user?.dataValues.username,
     id: user?.dataValues.id,
-  }
+  };
 
-  const token = jwt.sign(userForToken, SECRET)
+  const token = jwt.sign(userForToken, SECRET);
 
-  res.status(200).send({ token, username: user?.dataValues.username, name: user?.dataValues.name })
-})
+  res.status(200).send({ token, username: user?.dataValues.username, name: user?.dataValues.name });
+});
 
+module.exports = loginRouter;
 
-export const loginRouter: Router = router;
 ```
 
 ### Exercise 13.11.
@@ -244,8 +237,8 @@ Make deletion of a blog only possible for the user who added the blog.
 
 ## Result:
 
-```TS
-router.delete('/:id', [blogFinder, tokenExtractor], async (req, res) => {
+```JS
+blogRouter.delete('/:id', [blogFinder, tokenExtractor], async (req, res) => {
   const { decodedToken, blog } = req;
 
   if (decodedToken.id !== blog.userId) {
@@ -268,8 +261,8 @@ Modify the routes for retrieving all blogs and all users so that each blog shows
 ## Result:
 
 Blogs showing the user who created the blog:
-```TS
-router.get('/', async (_req, res) => {
+```JS
+blogRouter.get('/', async (_req, res) => {
   const blogs = await Blog.findAll({
     attributes: { exclude: ['userId'] },
     include: {
@@ -282,8 +275,8 @@ router.get('/', async (_req, res) => {
 ```
 
 Users showing the blogs belonging to each user:
-```TS
-router.get('/', async (_req, res) => {
+```JS
+userRouter.get('/', async (_req, res) => {
   const users = await User.findAll({
     include: {
       model: Blog,

@@ -1,12 +1,13 @@
-import bcrypt from 'bcrypt';
-import { Router } from 'express';
-import { Blog, User } from '../models';
-import { SECRET } from '../utils/config';
+const bcrypt = require('bcrypt');
+const Router = require('express').Router;
+const { Blog, User } = require('../models');
+const { SECRET } = require('../utils/config');
 
 const jwt = require('jsonwebtoken');
-const router: Router = Router();
 
-router.get('/', async (_req, res) => {
+const userRouter = Router();
+
+userRouter.get('/', async (_req, res) => {
   const users = await User.findAll({
     include: {
       model: Blog,
@@ -17,7 +18,7 @@ router.get('/', async (_req, res) => {
   res.json(users);
 });
 
-router.post('/', async (req, res) => {
+userRouter.post('/', async (req, res) => {
   const { name, username, password } = req.body;
 
   if (!password) {
@@ -43,7 +44,7 @@ router.post('/', async (req, res) => {
   res.status(201).json({ username: user.dataValues.username, token });
 });
 
-router.get('/:username', async (req, res) => {
+userRouter.get('/:username', async (req, res) => {
   const { username } = req.params;
   const user = await User.findOne({
     where: {
@@ -57,11 +58,11 @@ router.get('/:username', async (req, res) => {
   return res.status(200).json(user);
 });
 
-router.delete('/:id', async (req, res) => {
+userRouter.delete('/:id', async (req, res) => {
   const { id } = req.params;
   const user = await User.findByPk(id);
   await user?.destroy();
   res.status(200).json({ message: 'User deleted' }).end();
 });
 
-export const userRouter: Router = router;
+module.exports = userRouter;

@@ -1,5 +1,5 @@
-import * as Sequelize from 'sequelize';
-import { sequelize } from '../utils/db';
+const Sequelize = require('sequelize');
+const { sequelize } = require('../utils/db');
 
 class User extends Sequelize.Model {}
 
@@ -25,7 +25,11 @@ User.init(
       type: Sequelize.DataTypes.STRING,
       allowNull: false,
       validate: {
-        len: [4, 16],
+        customeValidator(value) {
+          if (value.length < 4 || value.length > 16) {
+            throw new Error('Name must be between 4 and 16 characters long');
+          }
+        },
       },
     },
     password_hash: {
@@ -41,4 +45,4 @@ User.init(
   },
 );
 
-export { User };
+module.exports = User;

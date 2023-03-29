@@ -1,10 +1,10 @@
-import { Router } from 'express';
-import { col, fn } from 'sequelize';
-import { Blog } from '../models';
+const Router = require('express').Router;
+const { Blog } = require('../models');
+const { col, fn } = require('sequelize');
 
-const router = require('express').Router();
+const authorRouter = Router();
 
-router.get('/', async (_req, res) => {
+authorRouter.get('/', async (_req, res) => {
   const authors = await Blog.findAll({
     group: 'author',
     attributes: [
@@ -18,4 +18,4 @@ router.get('/', async (_req, res) => {
   res.json(authors);
 });
 
-export const authorRouter: Router = router;
+module.exports = authorRouter;

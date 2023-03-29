@@ -18,16 +18,13 @@ Modify the blogs route so that it returns blogs based on likes in descending ord
 
 The solution for all three of previous tasks is as follows:
 
-```TS
-type Criteria = 'createAt' | 'likes';
-type OrderCriteria = 'DESC' | 'ASC';
-
-router.get('/', async (req, res) => {
+```JS
+blogRouter.get('/', async (req, res) => {
   const { search, created_at } = req.query;
-  let order: OrderCriteria = 'DESC';
-  let orderCriteria: Criteria;
+  let order = 'DESC';
+  let orderCriteria;
 
-  const getOrderCriteria = (): Criteria => {
+  const getOrderCriteria = () => {
     if (created_at) {
       order = created_at;
       orderCriteria = 'createAt';
@@ -72,14 +69,14 @@ Make a route for the application ```/api/authors``` that returns the number of b
 
 ### Result:
 
-```TS
-import { Router } from 'express';
-import { col, fn } from 'sequelize';
-import { Blog } from '../models';
+```JS
+const Router = require('express').Router;
+const { Blog } = require('../models');
+const { col, fn } = require('sequelize');
 
-const router = require('express').Router();
+const authorRouter = Router();
 
-router.get('/', async (_req, res) => {
+authorRouter.get('/', async (_req, res) => {
   const authors = await Blog.findAll({
     group: 'author',
     attributes: [
@@ -93,5 +90,6 @@ router.get('/', async (_req, res) => {
   res.json(authors);
 });
 
-export const authorRouter: Router = router;
+module.exports = authorRouter;
+
 ````

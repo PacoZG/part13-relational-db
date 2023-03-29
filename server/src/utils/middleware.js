@@ -1,7 +1,6 @@
-import { NextFunction, Request, Response } from 'express';
-import { logInfo } from './logger';
+const { logInfo } = require('./logger');
 
-const requestLogger = (req: Request, _res: Response, next: NextFunction) => {
+const requestLogger = (req, _ree, next) => {
   logInfo('Method:', req.method);
   logInfo('Path:  ', req.path);
   logInfo('Body:  ', req.body);
@@ -9,11 +8,11 @@ const requestLogger = (req: Request, _res: Response, next: NextFunction) => {
   next();
 };
 
-const unknownEndpoint = (_req: Request, res: Response) => {
+const unknownEndpoint = (_req, res) => {
   res.status(404).send({ error: 'Unknown Endpoint' });
 };
 
-const errorHandler = (error: any, _req: Request, res: Response, next: NextFunction) => {
+const errorHandler = (error, _req, res, next) => {
   if (error.name === 'SequelizeDatabaseError') {
     return res.status(400).send({
       error: error.errors[0].message,
@@ -35,4 +34,4 @@ const errorHandler = (error: any, _req: Request, res: Response, next: NextFuncti
   next(error);
 };
 
-export { requestLogger, unknownEndpoint, errorHandler };
+module.exports = { requestLogger, unknownEndpoint, errorHandler };

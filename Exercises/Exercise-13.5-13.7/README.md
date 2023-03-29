@@ -36,19 +36,12 @@ The updated number of likes will be relayed with the request:
 
 ## The implementation for this exercise is as follows:
 
-```TS
-interface BlogProps {
-  author?: string;
-  url?: string;
-  title?: string;
-  likes?: number;
-}
-
+```JS
 blogRouter.put('/:id', blogFinder, async (req, res) => {
   if (!req.blog) {
     return res.status(404).json({ message: 'Blog not found'}).end()
   } 
-  const { author, title, url, likes }: BlogProps = req.body
+  const { author, title, url, likes } = req.body
   req.blog.author = author ? author : req.blog.author  
   req.blog.title = title ? title : req.blog.title
   req.blog.url = url ? url : req.blog.url
@@ -73,12 +66,10 @@ For this task I used the same middleware configuration on which I check if the p
 
 The implementation is as follows:
 
-```TS
-import { NextFunction, Request, Response } from "express"
-import { logError, logInfo } from "./logger"
+```JS
+const { logInfo } = require('./logger');
 
-
-const requestLogger = (req: Request, _res: Response, next: NextFunction) => {
+const requestLogger = (req, _res, next) => {
   logInfo('Method:', req.method)
   logInfo('Path:  ', req.path)
   logInfo('Body:  ', req.body)
@@ -86,11 +77,11 @@ const requestLogger = (req: Request, _res: Response, next: NextFunction) => {
   next()
 }
 
-const unknownEndpoint = (_req: Request, res: Response) => {
+const unknownEndpoint = (_req, res) => {
   res.status(404).send({ error: 'Unknown Endpoint' })
 }
 
-const errorHandler = (error: any, _req: Request, res: Response, next: NextFunction) => {
+const errorHandler = (error, _req, res, next) => {
   if (error.name === 'SequelizeDatabaseError') {
     return res.status(400).send({
       error: 'Invalid id'
@@ -105,21 +96,20 @@ const errorHandler = (error: any, _req: Request, res: Response, next: NextFuncti
   next(error)
 }
 
-export { requestLogger, unknownEndpoint, errorHandler }
+module.exports = { requestLogger, unknownEndpoint, errorHandler };
 
 ```
 I am also using the logger configuration:
-```TS
-const logInfo = (...params: any) => {
+```JS
+const logInfo = (...params) => {
   console.log(...params);
 };
 
-const logError = (...params: any) => {
+const logError = (...params) => {
   console.error(...params);
 };
 
-export { logInfo, logError };
-
+module.exports = { logInfo, logError };
 ```
 
 The full application can be found [here](../../server/)

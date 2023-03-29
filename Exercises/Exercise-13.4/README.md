@@ -1,5 +1,5 @@
 # Task 13.4
-```ts
+```js
 Transform your application into a web application that supports the following operations
 
 GET api/blogs (list all blogs)
@@ -9,7 +9,7 @@ DELETE api/blogs/:id (delete a blog)
 
 The implementation for this exercise is as follows:
 
-```Javascript
+```JS
 const { v4: uuidv4 } = require('uuid')
 const blogRouter = require('express').Router()
 const Blog = require('../models/blog')

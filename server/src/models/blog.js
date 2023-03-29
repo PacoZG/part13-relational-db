@@ -1,5 +1,5 @@
-import * as Sequelize from 'sequelize';
-import { sequelize } from '../utils/db';
+const Sequelize = require('sequelize');
+const { sequelize } = require('../utils/db');
 
 class Blog extends Sequelize.Model {}
 
@@ -35,6 +35,17 @@ Blog.init(
       type: Sequelize.DataTypes.INTEGER,
       defaultValue: 0,
     },
+    year: {
+      type: Sequelize.DataTypes.INTEGER,
+      allowNull: true,
+      validate: {
+        customValidator(value) {
+          if (value < 1991 || value > new Date().getFullYear()) {
+            throw new Error('Invalid date, must be greater than 1991 or smaller that current year');
+          }
+        },
+      },
+    },
   },
   {
     sequelize,
@@ -44,4 +55,4 @@ Blog.init(
   },
 );
 
-export { Blog };
+module.exports = Blog;

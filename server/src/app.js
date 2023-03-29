@@ -1,12 +1,10 @@
 require('express-async-errors');
 const express = require('express');
-
-import { authorRouter } from './controllers/authors';
-import { blogRouter } from './controllers/blogs';
-import { loginRouter } from './controllers/login';
-import { userRouter } from './controllers/users';
-
-import { errorHandler, requestLogger, unknownEndpoint } from './utils/middleware';
+const authorRouter = require('./controllers/authors');
+const blogRouter = require('./controllers/blogs');
+const loginRouter = require('./controllers/login');
+const userRouter = require('./controllers/users');
+const { requestLogger, errorHandler, unknownEndpoint } = require('./utils/middleware');
 
 const app = express();
 
@@ -28,4 +26,4 @@ app.get('/health', (_req, res) => {
 app.use(errorHandler);
 app.use(unknownEndpoint);
 
-export { app };
+module.exports = app;
