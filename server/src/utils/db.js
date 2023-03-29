@@ -8,7 +8,8 @@ const sequelize = new Sequelize(DATABASE_URL);
 const connectToDatabase = async () => {
   try {
     await sequelize.authenticate();
-    await runCreatingMigrations();
+    await runMigrations();
+    await runMutationMigration();
     logInfo('Connection has been established successfully.');
     const blogs = await sequelize.query('SELECT * FROM blogs', { type: QueryTypes.SELECT });
     blogs.map((blog) => console.log(`${blog.author}: '${blog.title}', ${blog.likes} likes`));
@@ -16,15 +17,6 @@ const connectToDatabase = async () => {
     logError('Unable to connect to the database:', error);
     return process.exit(1);
   }
-};
-
-const migrationCreationConf = {
-  migrations: {
-    glob: 'migrations/20230329_00_createAt_and_updatedAt_to_users_and_blogs.js',
-  },
-  storage: new SequelizeStorage({ sequelize, tableName: 'migrations' }),
-  context: sequelize.getQueryInterface(),
-  logger: console,
 };
 
 const creationMigrationConf = {
@@ -36,38 +28,47 @@ const creationMigrationConf = {
   logger: console,
 };
 
-const mutationMigrationConf = {
-  migrations: {
-    glob: 'migrations/*.js',
-  },
-  storage: new SequelizeStorage({ sequelize, tableName: 'migrations' }),
-  context: sequelize.getQueryInterface(),
-  logger: console,
-};
-
-const runCreatingMigrations = async () => {
-  const migrator = new Umzug(migrationCreationConf);
+const runMigrations = async () => {
+  const migrator = new Umzug(creationMigrationConf);
   const migrations = await migrator.up();
   logInfo('Migrations up to date', {
     files: migrations.map((migration) => migration.name),
   });
 };
 
-const rollbackCreationMigrations = async () => {
+const rollbackMigration = async () => {
   await sequelize.authenticate();
   const migrator = new Umzug(creationMigrationConf);
   await migrator.down();
 };
 
+const migrationCreationConf = {
+  migrations: {
+    glob: 'migrations/20230329_00_createAt_and_updatedAt_to_users_and_blogs.js',
+  },
+  storage: new SequelizeStorage({ sequelize, tableName: 'migrations' }),
+  context: sequelize.getQueryInterface(),
+  logger: console,
+};
+
+const runMutationMigration = async () => {
+  const migrator = new Umzug(migrationCreationConf);
+  const migrations = await migrator.up();
+  logInfo('Mutations up to date', {
+    files: migrations.map((migration) => migration.name),
+  });
+};
+
 const rollbackMutationMigration = async () => {
   await sequelize.authenticate();
-  const migrator = new Umzug(mutationMigrationConf);
+  const migrator = new Umzug(migrationCreationConf);
   await migrator.down();
 };
 
 module.exports = {
   connectToDatabase,
   sequelize,
-  rollbackCreationMigrations,
+  rollbackMigration,
+  runMutationMigration,
   rollbackMutationMigration,
 };

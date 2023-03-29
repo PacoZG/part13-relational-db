@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
-    "migration:down": "node src/utils/rollbackMigrations.js",
-    "mutation:down": "node src/utils/rollbackMutations.js",
+    "migration:down": "node src/utils/rollbackMigration.js",
+    "mutation:down": "node src/utils/rollbackMutation.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Paco Zavala",

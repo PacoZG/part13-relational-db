@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 
 const { Blog, User } = require('../models');
 const { SECRET } = require('../utils/config');
+const { tokenExtractor } = require('../utils/middleware');
 
 const blogRouter = Router();
 
@@ -52,20 +53,6 @@ blogRouter.get('/', async (req, res) => {
   });
   res.json(blogs);
 });
-
-const tokenExtractor = (req, res, next) => {
-  const authorization = req.get('authorization');
-  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-    try {
-      req.decodedToken = jwt.verify(authorization.substring(7), SECRET);
-    } catch {
-      return res.status(401).json({ error: 'Invalid Token' });
-    }
-  } else {
-    return res.status(401).json({ error: 'Missing Token' });
-  }
-  next();
-};
 
 blogRouter.post('/', tokenExtractor, async (req, res) => {
   const { author, title, url, year } = req.body;

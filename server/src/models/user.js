@@ -36,11 +36,19 @@ User.init(
       type: Sequelize.DataTypes.STRING,
       allowNull: true,
     },
+    admin: {
+      type: Sequelize.DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    disabled: {
+      type: Sequelize.DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
   },
   {
     sequelize,
     underscored: true,
-    timestamps: true,
+    // timestamps: true,
     modelName: 'user',
   },
 );
