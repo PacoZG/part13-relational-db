@@ -11,21 +11,23 @@ requests
   ...
 server
   controllers
-    blogs.ts
-    login.ts
-    users.ts
-    authors.ts
+    blogs.js
+    login.js
+    users.js
+    authors.js
   models
-    blog.ts
-    index.ts
-    user.ts
+    blog.js
+    index.js
+    user.js
   utils
-    config.ts
-    db.ts
-    logger.ts
-    middleware.ts
-  app.ts
-  index.ts
+    config.js
+    db.js
+    logger.js
+    middleware.js
+    rollbackMigrations.js
+    rollbackMutations.js
+  app.js
+  index.js
 README.md
 ...
 ```

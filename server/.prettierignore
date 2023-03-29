@@ -11,3 +11,5 @@ dist
 *.yaml
 *.md
 *.css
+
+blogs.json
