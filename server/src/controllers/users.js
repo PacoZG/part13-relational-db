@@ -51,6 +51,7 @@ userRouter.post('/', async (req, res) => {
   };
 
   const token = jwt.sign(userForToken, SECRET);
+
   res.status(201).json({ username, token });
 });
 
@@ -86,8 +87,6 @@ userRouter.put('/:username', tokenExtractor, isAdmin, async (req, res) => {
 
 userRouter.get('/:id', async (req, res) => {
   const { read } = req.query;
-  console.log({ read });
-
   const { id } = req.params;
 
   const user = await User.findByPk(id, {
@@ -122,6 +121,7 @@ userRouter.delete('/:id', async (req, res) => {
   const { id } = req.params;
   const user = await User.findByPk(id);
   await user?.destroy();
+
   res.status(200).json({ message: 'User deleted' }).end();
 });
 
