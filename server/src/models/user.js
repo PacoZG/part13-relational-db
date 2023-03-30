@@ -6,7 +6,7 @@ class User extends Sequelize.Model {}
 User.init(
   {
     id: {
-      type: Sequelize.DataTypes.UUIDV4,
+      type: Sequelize.DataTypes.UUID,
       defaultValue: Sequelize.UUIDV4,
       primaryKey: true,
     },
@@ -48,7 +48,7 @@ User.init(
   {
     sequelize,
     underscored: true,
-    // timestamps: true,
+    timestamps: true,
     modelName: 'user',
   },
 );

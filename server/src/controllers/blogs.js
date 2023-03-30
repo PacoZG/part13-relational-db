@@ -83,11 +83,12 @@ blogRouter.put('/:id', blogFinder, async (req, res) => {
   if (!req.blog) {
     return res.status(404).json({ message: 'Blog not found' }).end();
   }
-  const { author, title, url, likes } = req.body;
+  const { author, title, url, likes, year } = req.body;
   req.blog.author = author ? author : req.blog.author;
   req.blog.title = title ? title : req.blog.title;
   req.blog.url = url ? url : req.blog.url;
   req.blog.likes = likes ? likes : req.blog.likes;
+  req.blog.year = year ? year : req.blog.year;
 
   await req.blog.save();
   return res.status(200).json(req.blog);

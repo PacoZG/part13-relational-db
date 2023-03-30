@@ -3,6 +3,7 @@ const express = require('express');
 const authorRouter = require('./controllers/authors');
 const blogRouter = require('./controllers/blogs');
 const loginRouter = require('./controllers/login');
+const readingsRouter = require('./controllers/readings');
 const userRouter = require('./controllers/users');
 const { requestLogger, errorHandler, unknownEndpoint } = require('./utils/middleware');
 
@@ -18,6 +19,7 @@ app.use('/api/blogs', blogRouter);
 app.use('/api/users', userRouter);
 app.use('/api/login', loginRouter);
 app.use('/api/authors', authorRouter);
+app.use('/api/readinglists', readingsRouter);
 
 app.get('/health', (_req, res) => {
   res.send('ok');

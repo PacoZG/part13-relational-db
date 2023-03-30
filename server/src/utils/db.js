@@ -11,8 +11,8 @@ const connectToDatabase = async () => {
     await runMigrations();
     await runMutationMigration();
     logInfo('Connection has been established successfully.');
-    const blogs = await sequelize.query('SELECT * FROM blogs', { type: QueryTypes.SELECT });
-    blogs.map((blog) => console.log(`${blog.author}: '${blog.title}', ${blog.likes} likes`));
+    // const blogs = await sequelize.query('SELECT * FROM blogs', { type: QueryTypes.SELECT });
+    // blogs.map((blog) => console.log(`${blog.author}: '${blog.title}', ${blog.likes} likes`));
   } catch (error) {
     logError('Unable to connect to the database:', error);
     return process.exit(1);
@@ -21,7 +21,7 @@ const connectToDatabase = async () => {
 
 const creationMigrationConf = {
   migrations: {
-    glob: 'migrations/20230324_00_initialize_blogs_and_users.js',
+    glob: 'migrations/20230324_01_migrations.js',
   },
   storage: new SequelizeStorage({ sequelize, tableName: 'migrations' }),
   context: sequelize.getQueryInterface(),
@@ -44,7 +44,7 @@ const rollbackMigration = async () => {
 
 const migrationCreationConf = {
   migrations: {
-    glob: 'migrations/20230329_00_createAt_and_updatedAt_to_users_and_blogs.js',
+    glob: 'migrations/20230329_01_mutations.js',
   },
   storage: new SequelizeStorage({ sequelize, tableName: 'migrations' }),
   context: sequelize.getQueryInterface(),

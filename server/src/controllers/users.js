@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const Router = require('express').Router;
-const { Blog, User } = require('../models');
+const { Blog, User, Reading } = require('../models');
 const { SECRET } = require('../utils/config');
 
 const jwt = require('jsonwebtoken');
@@ -28,7 +28,7 @@ userRouter.get('/', async (_req, res) => {
 });
 
 userRouter.post('/', async (req, res) => {
-  const { name, username, password } = req.body;
+  const { name, username, password, admin } = req.body;
 
   if (!password) {
     return res.status(403).json({ message: 'Password needs to be provided' });
@@ -37,6 +37,7 @@ userRouter.post('/', async (req, res) => {
   const saltRounds = 10;
   const passwordHash = await bcrypt.hash(password, saltRounds);
   const newUser = {
+    admin,
     name,
     username,
     password_hash: passwordHash,
@@ -53,19 +54,19 @@ userRouter.post('/', async (req, res) => {
   res.status(201).json({ username, token });
 });
 
-userRouter.get('/:username', async (req, res) => {
-  const { username } = req.params;
-  const user = await User.findOne({
-    where: {
-      username: username,
-    },
-  });
+// userRouter.get('/:username', async (req, res) => {
+//   const { username } = req.params;
+//   const user = await User.findOne({
+//     where: {
+//       username: username,
+//     },
+//   });
 
-  if (!user) {
-    return res.status(404).json({ message: 'User not found' });
-  }
-  return res.status(200).json(user);
-});
+//   if (!user) {
+//     return res.status(404).json({ message: 'User not found' });
+//   }
+//   return res.status(200).json(user);
+// });
 
 userRouter.put('/:username', tokenExtractor, isAdmin, async (req, res) => {
   const user = await User.findOne({
@@ -81,6 +82,40 @@ userRouter.put('/:username', tokenExtractor, isAdmin, async (req, res) => {
   } else {
     res.status(404).end();
   }
+});
+
+userRouter.get('/:id', async (req, res) => {
+  const { read } = req.query;
+  console.log({ read });
+
+  const { id } = req.params;
+
+  const user = await User.findByPk(id, {
+    attributes: {
+      include: ['name', 'username'],
+      exclude: ['id', 'password_hash', 'admin', 'disabled', 'createdAt', 'updatedAt'],
+    },
+    include: [
+      {
+        model: Blog,
+        as: 'readings',
+        attributes: { exclude: ['userId', 'createdAt', 'updatedAt'] },
+        through: {
+          attributes: [],
+        },
+        include: {
+          model: Reading,
+          where: {
+            read: read ? read : [true, false],
+          },
+          as: 'readinglists',
+          attributes: { include: ['read', 'id'], exclude: ['userId', 'blogId'] },
+        },
+      },
+    ],
+  });
+
+  res.json(user);
 });
 
 userRouter.delete('/:id', async (req, res) => {

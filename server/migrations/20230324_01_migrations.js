@@ -14,12 +14,6 @@ module.exports = {
           type: Sequelize.DataTypes.STRING,
           unique: true,
           allowNull: false,
-          validate: {
-            isEmail: {
-              msg: 'Validation isEmail on username failed',
-            },
-            is: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
-          },
         },
         name: {
           type: Sequelize.DataTypes.STRING,
@@ -52,12 +46,6 @@ module.exports = {
         url: {
           type: Sequelize.DataTypes.STRING,
           allowNull: false,
-          validate: {
-            isUrl: {
-              msg: 'The text provided is not a URL',
-            },
-            is: /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/,
-          },
         },
         title: {
           type: Sequelize.DataTypes.STRING,
@@ -74,13 +62,45 @@ module.exports = {
         modelName: 'blog',
       },
     );
+
     await queryInterface.addColumn('blogs', 'user_id', {
       type: Sequelize.DataTypes.UUID,
       allowNull: false,
       references: { model: 'users', key: 'id' },
     });
+
+    await queryInterface.createTable(
+      'readings',
+      {
+        id: {
+          type: Sequelize.DataTypes.UUID,
+          defaultValue: Sequelize.UUIDV4,
+          primaryKey: true,
+        },
+        user_id: {
+          type: Sequelize.DataTypes.UUID,
+          allowNull: false,
+          references: { model: 'users', key: 'id' },
+        },
+        blog_id: {
+          type: Sequelize.DataTypes.UUID,
+          allowNull: false,
+          references: { model: 'blogs', key: 'id' },
+        },
+        read: {
+          type: Sequelize.DataTypes.BOOLEAN,
+          default: false,
+        },
+      },
+      {
+        underscored: true,
+        timestamps: true,
+        modelName: 'reading',
+      },
+    );
   },
   down: async ({ context: queryInterface }) => {
+    await queryInterface.dropTable('readings');
     await queryInterface.dropTable('blogs');
     await queryInterface.dropTable('users');
   },
