@@ -155,8 +155,6 @@ Note also that despite having an array field readinglists in the example, it sho
 ```js
 userRouter.get('/:id', async (req, res) => {
   const { read } = req.query;
-  console.log({ read });
-
   const { id } = req.params;
 
   const user = await User.findByPk(id, {
