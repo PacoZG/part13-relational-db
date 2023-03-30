@@ -12,13 +12,15 @@ requests
 src
   server
     controllers
+      authors.js
       blogs.js
       login.js
+      readings.js
       users.js
-      authors.js
     models
       blog.js
       index.js
+      readings.js
       user.js
     utils
       config.js
@@ -27,6 +29,7 @@ src
       middleware.js
       rollbackMigrations.js
       rollbackMutations.js
+      runMutations.js
     app.js
     index.js
   package-lock.json
