@@ -1,16 +1,14 @@
 const Router = require('express').Router;
 const Op = require('sequelize').Op;
-const jwt = require('jsonwebtoken');
-
 const { Blog, User } = require('../models');
-const { SECRET } = require('../utils/config');
-const { tokenExtractor } = require('../utils/middleware');
+const { tokenExtractor, checkTokenStatus } = require('../utils/middleware');
 
 const blogRouter = Router();
 
 const blogFinder = async (req, _res, next) => {
   const { id } = req.params;
   req.blog = await Blog.findByPk(id);
+
   next();
 };
 
@@ -51,10 +49,11 @@ blogRouter.get('/', async (req, res) => {
     },
     order: [[getOrderCriteria(), order]],
   });
+
   res.json(blogs);
 });
 
-blogRouter.post('/', tokenExtractor, async (req, res) => {
+blogRouter.post('/', [tokenExtractor, checkTokenStatus], async (req, res) => {
   const { author, title, url, year } = req.body;
   const newBlog = {
     author,
@@ -63,8 +62,8 @@ blogRouter.post('/', tokenExtractor, async (req, res) => {
     year,
   };
 
-  const user = await User.findByPk(req.decodedToken.id);
   const blog = await Blog.create({ ...newBlog, userId: user?.dataValues.id });
+
   try {
     res.status(201).json(blog);
   } catch (error) {
@@ -76,25 +75,40 @@ blogRouter.get('/:id', blogFinder, async (req, res) => {
   if (!req.blog) {
     return res.status(404).json({ message: 'Blog not found' });
   }
+
   return res.status(200).json(req.blog);
 });
 
-blogRouter.put('/:id', blogFinder, async (req, res) => {
-  if (!req.blog) {
+blogRouter.put('/:id', [blogFinder, tokenExtractor, checkTokenStatus], async (req, res) => {
+  const { blog } = req;
+  if (!blog) {
     return res.status(404).json({ message: 'Blog not found' }).end();
   }
-  const { author, title, url, likes, year } = req.body;
+
+  const { author, title, url, year } = req.body;
   req.blog.author = author ? author : req.blog.author;
   req.blog.title = title ? title : req.blog.title;
   req.blog.url = url ? url : req.blog.url;
-  req.blog.likes = likes ? likes : req.blog.likes;
   req.blog.year = year ? year : req.blog.year;
 
   await req.blog.save();
   return res.status(200).json(req.blog);
 });
 
-blogRouter.delete('/:id', [blogFinder, tokenExtractor], async (req, res) => {
+blogRouter.put('/like/:id', blogFinder, async (req, res) => {
+  const { blog } = req;
+  if (!blog) {
+    return res.status(404).json({ message: 'Blog not found' }).end();
+  }
+
+  const { likes } = req.body;
+  req.blog.likes = likes ? likes : req.blog.likes;
+
+  await req.blog.save();
+  return res.status(200).json(req.blog);
+});
+
+blogRouter.delete('/:id', [blogFinder, tokenExtractor, checkTokenStatus], async (req, res) => {
   const { decodedToken, blog } = req;
 
   if (decodedToken.id !== blog.userId) {

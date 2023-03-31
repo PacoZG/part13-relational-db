@@ -1,6 +1,20 @@
 const { logInfo } = require('./logger');
 const jwt = require('jsonwebtoken');
 const { SECRET } = require('./config');
+const moment = require('moment');
+const { User } = require('../models');
+
+const isAdmin = async (req, res, next) => {
+  const authorization = req.get('authorization');
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    const token = jwt.verify(authorization.substring(7), SECRET);
+    const user = await User.findByPk(token.id);
+    if (!user.admin) {
+      return res.status(401).json({ error: 'Operation allowed to Admins only' });
+    }
+  }
+  next();
+};
 
 const requestLogger = (req, _ree, next) => {
   logInfo('Method:', req.method);
@@ -41,7 +55,8 @@ const tokenExtractor = (req, res, next) => {
   const authorization = req.get('authorization');
   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
     try {
-      req.decodedToken = jwt.verify(authorization.substring(7), SECRET);
+      const token = jwt.verify(authorization.substring(7), SECRET);
+      req.decodedToken = token;
     } catch {
       return res.status(401).json({ error: 'token invalid' });
     }
@@ -51,4 +66,33 @@ const tokenExtractor = (req, res, next) => {
   next();
 };
 
-module.exports = { requestLogger, unknownEndpoint, errorHandler, tokenExtractor };
+const checkTokenStatus = async (req, res, next) => {
+  const authorization = req.get('authorization');
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    const token = jwt.verify(authorization.substring(7), SECRET);
+    const currentTime = moment();
+    const timeDifferenceInMinutes = currentTime.diff(moment(token.date), 'minutes');
+
+    const user = await User.findByPk(token.id);
+
+    if (timeDifferenceInMinutes > 60) {
+      user.disabled = true;
+      await user.save();
+      return res.status(401).json({ error: 'Token has expired' });
+    }
+
+    if (user.disabled) {
+      return res.json({ error: 'You must login to do this' });
+    }
+  }
+  next();
+};
+
+module.exports = {
+  isAdmin,
+  requestLogger,
+  unknownEndpoint,
+  errorHandler,
+  tokenExtractor,
+  checkTokenStatus,
+};

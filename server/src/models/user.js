@@ -42,7 +42,7 @@ User.init(
     },
     disabled: {
       type: Sequelize.DataTypes.BOOLEAN,
-      defaultValue: false,
+      defaultValue: true,
     },
   },
   {

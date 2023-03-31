@@ -15,12 +15,13 @@ src
       authors.js
       blogs.js
       login.js
+      logout.js
       readings.js
       users.js
     models
       blog.js
       index.js
-      readings.js
+      reading.js
       user.js
     utils
       config.js

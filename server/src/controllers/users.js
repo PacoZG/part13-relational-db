@@ -2,19 +2,12 @@ const bcrypt = require('bcrypt');
 const Router = require('express').Router;
 const { Blog, User, Reading } = require('../models');
 const { SECRET } = require('../utils/config');
+const moment = require('moment');
 
 const jwt = require('jsonwebtoken');
-const { tokenExtractor } = require('../utils/middleware');
+const { tokenExtractor, isAdmin } = require('../utils/middleware');
 
 const userRouter = Router();
-
-const isAdmin = async (req, res, next) => {
-  const user = await User.findByPk(req.decodedToken.id);
-  if (!user.admin) {
-    return res.status(401).json({ error: 'operation not allowed' });
-  }
-  next();
-};
 
 userRouter.get('/', async (_req, res) => {
   const users = await User.findAll({
@@ -24,6 +17,7 @@ userRouter.get('/', async (_req, res) => {
     },
     attributes: { exclude: ['password_hash'] },
   });
+
   res.json(users);
 });
 
@@ -48,6 +42,7 @@ userRouter.post('/', async (req, res) => {
   const userForToken = {
     id: user.dataValues.id,
     username: user.dataValues.username,
+    date: moment().format(),
   };
 
   const token = jwt.sign(userForToken, SECRET);
@@ -66,15 +61,13 @@ userRouter.post('/', async (req, res) => {
 //   if (!user) {
 //     return res.status(404).json({ message: 'User not found' });
 //   }
+
 //   return res.status(200).json(user);
 // });
 
-userRouter.put('/:username', tokenExtractor, isAdmin, async (req, res) => {
-  const user = await User.findOne({
-    where: {
-      username: req.params.username,
-    },
-  });
+userRouter.put('/:id', [tokenExtractor, isAdmin], async (req, res) => {
+  const { id } = req.params;
+  const user = await User.findByPk(id);
 
   if (user) {
     user.disabled = req.body.disabled;
@@ -117,12 +110,16 @@ userRouter.get('/:id', async (req, res) => {
   res.json(user);
 });
 
-userRouter.delete('/:id', async (req, res) => {
+userRouter.delete('/:id', tokenExtractor, async (req, res) => {
   const { id } = req.params;
-  const user = await User.findByPk(id);
-  await user?.destroy();
 
-  res.status(200).json({ message: 'User deleted' }).end();
+  if (req.decodedToken.id === id) {
+    const user = await User.findByPk(id);
+    await user.destroy;
+    res.status(200).json({ message: 'User deleted' }).end();
+  }
+
+  res.status(405).json({ error: 'Action not allowed' });
 });
 
 module.exports = userRouter;
