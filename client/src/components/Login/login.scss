@@ -1,0 +1,43 @@
+.login-container {
+  padding: 2px;
+  text-align: center;
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.login-container h1 {
+  font-size: 36px;
+  color: #61dafb;
+  margin: 0;
+}
+
+.login-container h2 {
+  font-size: 28px;
+  margin: 24px 0 56px;
+}
+
+
+.login-container .actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-container .actions button {
+  background-color: white;
+  border: 1px solid #212121;
+  border-radius: 80px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #4d4d4d;
+  padding: 12px 52px;
+  margin-left: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease-out;
+}
